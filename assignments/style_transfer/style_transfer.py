@@ -202,7 +202,7 @@ def main():
     ## TO DO: create optimizer
     ## model['optimizer'] = ...
     ###############################
-    model['optimizer'] = tf.train.AdamOptimizer(LR).minimize(model['content_loss'], model['global_step'])
+    model['optimizer'] = tf.train.AdamOptimizer(LR).minimize(model['total_loss'], model['global_step'])
     model['summary_op'] = _create_summary(model)
 
     initial_image = utils.generate_noise_image(content_image, IMAGE_HEIGHT, IMAGE_WIDTH, NOISE_RATIO)

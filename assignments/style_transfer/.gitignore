@@ -1,0 +1,6 @@
+checkpoints/*
+outputs/*
+events/*
+imagenet-vgg-verydeep-19.mat
+content/resized_*
+styles/resized_*

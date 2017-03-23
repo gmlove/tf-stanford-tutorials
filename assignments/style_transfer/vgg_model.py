@@ -9,7 +9,7 @@ http://web.stanford.edu/class/cs20si/assignments/a2.pdf
 
 import numpy as np
 import tensorflow as tf
-import scipy.io
+from scipy import io as scipy_io
 
 def _weights(vgg_layers, layer, expected_layer_name):
     """ Return the weights and biases already trained by VGG
@@ -41,7 +41,11 @@ def _conv2d_relu(vgg_layers, prev_layer, layer, layer_name):
     Hint for choosing strides size: 
         for small images, you probably don't want to skip any pixel
     """
-    pass
+    W, b = _weights(vgg_layers, layer, layer_name)
+    curr_layer = tf.nn.conv2d(prev_layer, tf.constant(W), [1, 1, 1, 1], 'SAME')
+    curr_layer = tf.nn.bias_add(curr_layer, tf.constant(b))
+    curr_layer = tf.nn.relu(curr_layer)
+    return curr_layer
 
 def _avgpool(prev_layer):
     """ Return the average pooling layer. The paper suggests that average pooling
@@ -53,13 +57,14 @@ def _avgpool(prev_layer):
         the output of the tf.nn.avg_pool() function.
     Hint for choosing strides and kszie: choose what you feel appropriate
     """
-    pass
+    return tf.nn.avg_pool(prev_layer, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1),
+                          padding='SAME')
 
 def load_vgg(path, input_image):
     """ Load VGG into a TensorFlow model.
     Use a dictionary to hold the model instead of using a Python class
     """
-    vgg = scipy.io.loadmat(path)
+    vgg = scipy_io.loadmat(path)
     vgg_layers = vgg['layers']
 
     graph = {} 

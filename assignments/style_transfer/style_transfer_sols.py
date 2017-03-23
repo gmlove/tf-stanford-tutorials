@@ -14,14 +14,16 @@ import time
 import numpy as np
 import tensorflow as tf
 
-import vgg_model
+import vgg_model_sols as vgg_model
 import utils
 
 # parameters to manage experiments
-STYLE = 'guernica'
-CONTENT = 'deadpool'
+STYLE = 'starry_night'
+CONTENT = 'content' # 'deadpool'
 STYLE_IMAGE = 'styles/' + STYLE + '.jpg'
 CONTENT_IMAGE = 'content/' + CONTENT + '.jpg'
+EXP = 'events/'
+
 IMAGE_HEIGHT = 250
 IMAGE_WIDTH = 333
 NOISE_RATIO = 0.6 # percentage of weight of the noise for intermixing with the content image
@@ -36,7 +38,7 @@ W = [0.5, 1.0, 1.5, 3.0, 4.0] # give more weights to deeper layers.
 # Layer used for content features. You can change this.
 CONTENT_LAYER = 'conv4_2'
 
-ITERS = 300
+ITERS = 10000
 LR = 2.0
 
 MEAN_PIXELS = np.array([123.68, 116.779, 103.939]).reshape((1,1,1,3))

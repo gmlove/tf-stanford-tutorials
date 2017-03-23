@@ -87,8 +87,10 @@ def _single_style_loss(a, g):
         3. a and g are feature representation, not gram matrices
     """
     _, height, width, number = a.shape
-    loss = tf.reduce_sum((_gram_matrix(a, number, height * width) - _gram_matrix(g, number, height * width)) ** 2)
-    return loss / (4 * (height * width) ** 2 * number ** 2)
+    A = _gram_matrix(a, number, height * width)
+    G = _gram_matrix(g, number, height * width)
+    loss = tf.reduce_sum((A - G) ** 2 / (4 * (height * width) ** 2 * number ** 2) )
+    return loss
 
 def _create_style_loss(A, model):
     """ Return the total style loss

@@ -65,7 +65,7 @@ def _create_content_loss(p, f):
 
     """
     coe = reduce(lambda a, b: a * b, p.shape)
-    return coe * tf.reduce_sum((p - f) ** 2)
+    return tf.reduce_sum((p - f) ** 2 / (4 * coe))
 
 def _gram_matrix(F, N, M):
     """ Create and return the gram matrix for tensor F

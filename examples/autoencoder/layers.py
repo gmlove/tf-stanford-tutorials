@@ -16,15 +16,20 @@ def conv(input, name, filter_dims, stride_dims, padding='SAME',
     # Define a variable scope for the conv layer
     with tf.variable_scope(name) as scope:
         # Create filter weight variable
+        W = tf.get_variable('weights', [filter_h, filter_w, num_channels_in, num_channels_out])
         
         # Create bias variable
-        
+        b = tf.get_variable('bias', [num_channels_out])
+
         # Define the convolution flow graph
-        
+        net = tf.nn.conv2d(input, W, [1, stride_h, stride_w, 1], padding)
         # Add bias to conv output
+        net = net + b
         
         # Apply non-linearity (if asked) and return output
-        pass
+        if non_linear_fn:
+            net = non_linear_fn(net)
+        return net
 
 def deconv(input, name, filter_dims, stride_dims, padding='SAME',
            non_linear_fn=tf.nn.relu):
@@ -46,15 +51,21 @@ def deconv(input, name, filter_dims, stride_dims, padding='SAME',
     with tf.variable_scope(name) as scope:
         # Create filter weight variable
         # Note that num_channels_out and in positions are flipped for deconv.
-        
+        W = tf.get_variable('weights', [filter_h, filter_w, num_channels_out, num_channels_in])
+
         # Create bias variable
+        b = tf.get_variable('bias', [num_channels_out])
         
         # Define the deconv flow graph
+        net = tf.nn.conv2d_transpose(input, W, output_dims, [1, stride_h, stride_w, 1], padding)
         
         # Add bias to deconv output
+        net = net + b
         
         # Apply non-linearity (if asked) and return output
-        pass
+        if non_linear_fn:
+            net = non_linear_fn(net)
+        return net
 
 def max_pool(input, name, filter_dims, stride_dims, padding='SAME'):
     assert(len(filter_dims) == 2) # filter height and width
@@ -84,10 +95,13 @@ def fc(input, name, out_dim, non_linear_fn=tf.nn.relu):
             flat_input = input
 
         # Create weight variable
-        
+        W = tf.get_variable('weights', [in_dim, out_dim])
         # Create bias variable
-        
+        b = tf.get_variable('bias', [out_dim])
         # Define FC flow graph
+        net = tf.matmul(flat_input, W) + b
         
         # Apply non-linearity (if asked) and return output
-        pass
+        if non_linear_fn:
+            net = non_linear_fn(net)
+        return net

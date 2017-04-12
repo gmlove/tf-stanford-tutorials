@@ -12,17 +12,10 @@ def encoder(input):
     
     # FC: output_dim: 100, no non-linearity
     with tf.variable_scope('encoder'):
-        net = tf.nn.conv2d(input, tf.get_variable('conv1_weights', [3, 3, 1, 8]), [1, 2, 2, 1], 'SAME')
-        net = tf.nn.relu(net + tf.get_variable('conv1_bias', [8]))
-        net = tf.nn.conv2d(net, tf.get_variable('conv2_weights', [3, 3, 8, 8]), [1, 2, 2, 1], 'SAME')
-        net = tf.nn.relu(net + tf.get_variable('conv2_bias', [8]))
-        net = tf.nn.conv2d(net, tf.get_variable('conv3_weights', [3, 3, 8, 8]), [1, 2, 2, 1], 'SAME')
-        net = tf.nn.relu(net + tf.get_variable('conv3_bias', [8]))
-
-        size = net.get_shape().as_list()
-        batch_size, size = size[0], size[1] * size[2] * size[3]
-        net = tf.reshape(net, [batch_size, size])
-        net = tf.matmul(net, tf.get_variable('fc_weights', [size, 100])) + tf.get_variable('fc_bias', [100])
+        net = conv(input, 'conv1', [3, 3, 1], [2, 2])
+        net = conv(net, 'conv2', [3, 3, 8], [2, 2])
+        net = conv(net, 'conv3', [3, 3, 8], [2, 2])
+        net = fc(net, 'fc', 100, non_linear_fn=None)
     return net
 
 
@@ -39,18 +32,11 @@ def decoder(input):
     # Deconv 3: filter: [7, 7, 1], stride: [1, 1], padding: valid, sigmoid
     with tf.variable_scope('decoder'):
         batch_size = input.get_shape().as_list()[0]
-        net = tf.matmul(input, tf.get_variable('fc_weights', [batch_size, 128]))
-        net = tf.nn.relu(net + tf.get_variable('fc_bias', [128]))
+        net = fc(input, 'fc', 128)
         net = tf.reshape(net, [batch_size, 4, 4, 8])
-        net = tf.nn.conv2d_transpose(net, tf.get_variable('conv1_weights', [3, 3, 8, 8]),
-                                     [batch_size, 8, 8, 8], [1, 2, 2, 1], 'SAME')
-        net = tf.nn.relu(net + tf.get_variable('conv1_bias', [8]))
-        net = tf.nn.conv2d_transpose(net, tf.get_variable('conv2_weights', [8, 8, 1, 8]),
-                                     [batch_size, 22, 22, 1], [1, 2, 2, 1], 'VALID')
-        net = tf.nn.relu(net + tf.get_variable('conv2_bias', [1]))
-        net = tf.nn.conv2d_transpose(net, tf.get_variable('conv3_weights', [7, 7, 1, 1]),
-                                     [batch_size, 28, 28, 1], [1, 1, 1, 1], 'VALID')
-        net = tf.nn.sigmoid(net + tf.get_variable('conv3_bias', [1]))
+        net = deconv(net, 'deconv1', [3, 3, 8], [2, 2])
+        net = deconv(net, 'deconv2', [8, 8, 1], [2, 2], padding='VALID')
+        net = deconv(net, 'deconv3', [7, 7, 1], [1, 1], padding='VALID', non_linear_fn=tf.nn.sigmoid)
     return net
 
 def autoencoder(input_shape):

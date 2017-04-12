@@ -4,7 +4,7 @@ import tensorflow
 import numpy as np
 
 import matplotlib
-matplotlib.use('TKAgg')
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
 from tensorflow.examples.tutorials.mnist import input_data

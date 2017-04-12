@@ -11,7 +11,7 @@ lr = 0.01
 num_epochs = 50
 
 def calculate_loss(original, reconstructed):
-    return tf.div(tf.reduce_sum(tf.square(tf.sub(reconstructed,
+    return tf.div(tf.reduce_sum(tf.square(tf.subtract(reconstructed,
                                                  original))), 
                   tf.constant(float(batch_size)))
 
@@ -26,7 +26,7 @@ def train(dataset):
 
         dataset_size = len(dataset.train.images)
         print("Dataset size:", dataset_size)
-        num_iters = (num_epochs * dataset_size)/batch_size
+        num_iters = int((num_epochs * dataset_size)/batch_size)
         print("Num iters:", num_iters)
         for step in range(num_iters):
             input_batch  = get_next_batch(dataset.train, batch_size)

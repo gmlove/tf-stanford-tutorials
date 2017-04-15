@@ -14,7 +14,7 @@ def encoder(input):
     with tf.variable_scope('encoder'):
         net = conv(input, 'conv1', [3, 3, 1], [2, 2])
         net = conv(net, 'conv2', [3, 3, 8], [2, 2])
-        net = conv(net, 'conv3', [3, 3, 8], [2, 2], padding='VALID')
+        net = conv(net, 'conv3', [3, 3, 8], [2, 2])
         # we don't need a fc layer
         # net = fc(net, 'fc', 100, non_linear_fn=None)
     return net

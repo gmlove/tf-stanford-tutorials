@@ -37,7 +37,7 @@ def decoder(input):
         # batch_size = net.get_shape().as_list()[0]
         # net = fc(net, 'fc', 128)
         # net = tf.reshape(net, [batch_size, 4, 4, 8])
-        net = deconv(net, 'deconv1', [3, 3, 8], [1, 1])
+        net = deconv(net, 'deconv1', [3, 3, 8], [2, 2])
         net = deconv(net, 'deconv2', [3, 3, 8], [2, 2])
         net = deconv(net, 'deconv3', [3, 3, 1], [2, 2], non_linear_fn=tf.nn.sigmoid)
     return net

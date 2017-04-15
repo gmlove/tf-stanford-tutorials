@@ -14,8 +14,9 @@ def encoder(input):
     with tf.variable_scope('encoder'):
         net = conv(input, 'conv1', [3, 3, 1], [2, 2])
         net = conv(net, 'conv2', [3, 3, 8], [2, 2])
-        net = conv(net, 'conv3', [3, 3, 8], [2, 2])
-        net = fc(net, 'fc', 100, non_linear_fn=None)
+        net = conv(net, 'conv3', [3, 3, 8], [2, 2], padding='VALID')
+        # we don't need a fc layer
+        # net = fc(net, 'fc', 100, non_linear_fn=None)
     return net
 
 
@@ -31,12 +32,14 @@ def decoder(input):
     
     # Deconv 3: filter: [7, 7, 1], stride: [1, 1], padding: valid, sigmoid
     with tf.variable_scope('decoder'):
-        batch_size = input.get_shape().as_list()[0]
-        net = fc(input, 'fc', 128)
-        net = tf.reshape(net, [batch_size, 4, 4, 8])
-        net = deconv(net, 'deconv1', [3, 3, 8], [2, 2])
-        net = deconv(net, 'deconv2', [8, 8, 1], [2, 2], padding='VALID')
-        net = deconv(net, 'deconv3', [7, 7, 1], [1, 1], padding='VALID', non_linear_fn=tf.nn.sigmoid)
+        # removed the fc layer and change the network structure to the same as encoder
+        net = input
+        # batch_size = net.get_shape().as_list()[0]
+        # net = fc(net, 'fc', 128)
+        # net = tf.reshape(net, [batch_size, 4, 4, 8])
+        net = deconv(net, 'deconv1', [3, 3, 8], [1, 1])
+        net = deconv(net, 'deconv2', [3, 3, 8], [2, 2])
+        net = deconv(net, 'deconv3', [3, 3, 1], [2, 2], non_linear_fn=tf.nn.sigmoid)
     return net
 
 def autoencoder(input_shape):
